@@ -2,40 +2,39 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Param,
   Query,
   Body,
   ParseIntPipe,
-  Headers,
-  Ip,
+  DefaultValuePipe,
 } from '@nestjs/common';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { GetUsersParamDto } from './dtos/get-users-params.dto';
+import { PatchUserDto } from './dtos/patch-user.dto';
 
 @Controller('users')
 export class UsersController {
-  @Get('/:id/{:optional}')
-  public getUsers(
-    @Param('id', ParseIntPipe) id: number | undefined,
-    @Param('optional') optional?: number,
-    @Query('limit', ParseIntPipe) limit?: number,
+  @Get('/:id') // Route for required ID
+  public getUserById(
+    @Param() getUsersParamDto: GetUsersParamDto,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
   ) {
-    console.log(typeof id);
-    console.log(typeof limit);
-    console.log(optional);
-    if (optional) {
-      return `ID is ${id} and optional parameter is ${optional}`;
-    } else {
-      return `ID is ${id} and no optional parameter`;
-    }
+    console.log(limit);
+    console.log(page);
+    console.log(getUsersParamDto);
+    return `Get user by ID: ${getUsersParamDto.id}`;
   }
+
   @Post()
-  public createUser(
-    @Body() request: any,
-    @Headers() headers: any,
-    @Ip() ip: any,
-  ) {
-    console.log(request);
-    console.log(headers);
-    console.log(ip);
+  public createUser(@Body() createUserDto: CreateUserDto) {
+    console.log(createUserDto);
     return 'You sent a request to create user endpoint';
+  }
+
+  @Patch()
+  public patchUser(@Body() patchUserDto: PatchUserDto) {
+    return patchUserDto;
   }
 }
