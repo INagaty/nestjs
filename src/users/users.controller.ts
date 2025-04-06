@@ -13,12 +13,27 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { GetUsersParamDto } from './dtos/get-users-params.dto';
 import { PatchUserDto } from './dtos/patch-user.dto';
 import { UsersService } from './providers/users.service';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('Users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/:id') // Route for required ID
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+  })
+  @ApiOperation({
+    summary: 'Get user by ID',
+    description: 'Get user by ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+  })
   public getUserById(
     @Param() getUsersParamDto: GetUsersParamDto,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
@@ -29,8 +44,7 @@ export class UsersController {
 
   @Post()
   public createUser(@Body() createUserDto: CreateUserDto) {
-    console.log(createUserDto);
-    return 'You sent a request to create user endpoint';
+    return this.usersService.createUser(createUserDto);
   }
 
   @Patch()

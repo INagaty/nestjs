@@ -24,11 +24,13 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsEmail()
+  @MaxLength(96)
   email: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
+  @MaxLength(96)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/, {
     message:
       'Password must contain at least one uppercase letter, one lowercase letter, and one number',

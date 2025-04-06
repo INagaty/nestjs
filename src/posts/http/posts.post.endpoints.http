@@ -1,0 +1,17 @@
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+    "title": "Whats New With NESJS",
+    "postType": "post",
+    "slug": "new-with-nestjs",
+    "status": "draft",
+    "content": "test content",
+    "schema": "{\r\n \"@context\": \"http://schema.org\",\r\n \"@type\": \"Person\"\r\n}",
+    "featuredImageUrl": "http://localhost:3000/images/image1.jpg",
+    "publishOn": "2024-03-16T07:46:32+0000",
+    //"tags": ["nestjs", "typescript"],
+    "metaOptions": {
+        "metaValue": "{\"sidebarEnabled\": true, \"footerActive\": true}"
+    }
+}
