@@ -1,10 +1,11 @@
 import { Body, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { CreatePostDto } from '../dtos/create-post.dto';
-import { Repository } from 'typeorm';
+import { ManyToOne, Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -46,14 +47,10 @@ export class PostsService {
   }
 
   public async delete(id: number) {
-    const post = await this.postRepository.findOneBy({ id });
-    const inverse = await this.metaOptionsRepository.find({
-      where: { id: post?.metaOptions?.id },
-      relations: {
-        post: true,
-      },
-    });
-    console.log(inverse);
-    return { deleted: true, id };
+    await this.postRepository.delete(id);
+    return {deleted: true, id}
   }
+
+  @ManyToOne(() =>User, (user) => user.posts)
+  author: User;
 }
