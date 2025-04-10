@@ -1,8 +1,10 @@
+import { Post } from 'src/posts/post.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -55,4 +57,10 @@ export class Tag {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ManyToMany(() => Post, (post) => post.tags, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  posts: Post[];
 }

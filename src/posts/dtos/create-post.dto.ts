@@ -12,6 +12,7 @@ import {
   IsArray,
   ValidateNested,
   MaxLength,
+  IsInt,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -66,12 +67,21 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  @MinLength(3, { each: true })
-  tags?: string[];
+  @IsInt({ each: true })
+  tags?: number[];
 
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => createPostMetaOptionsDto)
   metaOptions: createPostMetaOptionsDto | null;
+
+  @IsInt()
+  @IsNotEmpty()
+  @ApiProperty({
+    type: 'integer',
+    required: true,
+    description: 'The ID of the author',
+    example: 1,
+  })
+  authorId: number;
 }

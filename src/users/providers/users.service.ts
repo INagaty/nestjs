@@ -50,11 +50,11 @@ export class UsersService {
     ];
   }
 
-  public findOneById(id: string) {
-    return {
-      id: 1234,
-      firstName: 'John',
-      email: 'john@doe.com',
-    };
+  public async findOneById(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    return user;
   }
 }
