@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * Class to connect to Users Table and preform Business Logic
@@ -17,7 +18,9 @@ export class UsersService {
     private readonly authService: AuthService,
 
     @InjectRepository(User)
-    private userRepository: Repository<User>, // Replace with actual user repository type
+    private userRepository: Repository<User>,
+
+    private readonly configService: ConfigService, // Inject ConfigService
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
