@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -15,6 +16,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { TagsService } from 'src/tags/providers/tags.service';
 import { PatchPostDto } from '../dtos/patch-post.dto';
+import { GetPostsDto } from '../dtos/get-posts.dto';
+import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider';
+import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
 
 @Injectable()
 export class PostsService {
@@ -25,6 +29,7 @@ export class PostsService {
     @InjectRepository(MetaOption)
     private readonly metaOptionsRepository: Repository<MetaOption>,
     private readonly tagsSerivce: TagsService,
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
   public async createPost(@Body() createPostDto: CreatePostDto) {
@@ -49,15 +54,17 @@ export class PostsService {
     return await this.postRepository.save(post);
   }
 
-  public async findAll(userId: number) {
-    const user = this.usersService.findOneById(userId);
-    const posts = await this.postRepository.find({
-      relations: {
-        metaOptions: true,
-        author: true,
+  public async findAll(
+    postQuery: GetPostsDto,
+    userId: number,
+  ): Promise<Paginated<Post>> {
+    const posts = await this.paginationProvider.paginateQuery(
+      {
+        limit: postQuery.limit,
+        page: postQuery.page,
       },
-    });
-    console.log(user);
+      this.postRepository,
+    );
     return posts;
   }
 

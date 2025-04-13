@@ -11,24 +11,31 @@ import {
 } from '@nestjs/common';
 import { GetUsersParamDto } from '../dtos/get-users-params.dto';
 import { AuthService } from 'src/auth/providers/auth.service';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { ConfigService } from '@nestjs/config';
 import { error } from 'console';
+import { UsersCreateManyProvider } from './users-create-many.provider';
+import { CreateManyUsersDto } from '../dtos/create-many-users.dto';
 
 /**
  * Class to connect to Users Table and preform Business Logic
  */
 @Injectable()
 export class UsersService {
+  queryRunner: any;
   constructor(
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    @Inject()
+    private readonly usersCreateManyProvider: UsersCreateManyProvider,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -90,5 +97,9 @@ export class UsersService {
       throw new BadRequestException('User not found');
     }
     return user;
+  }
+
+  public async createMany(createManyUsersDto: CreateManyUsersDto) {
+    return this.usersCreateManyProvider.createMany(createManyUsersDto);
   }
 }
