@@ -18,6 +18,8 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { error } from 'console';
 import { UsersCreateManyProvider } from './users-create-many.provider';
 import { CreateManyUsersDto } from '../dtos/create-many-users.dto';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
 
 /**
  * Class to connect to Users Table and preform Business Logic
@@ -36,37 +38,14 @@ export class UsersService {
     private readonly usersCreateManyProvider: UsersCreateManyProvider,
 
     private readonly dataSource: DataSource,
+
+    private readonly createUserProvider: CreateUserProvider,
+
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
-    let existingUser;
-
-    //Check Email
-    try {
-      existingUser = await this.userRepository.findOne({
-        where: { email: createUserDto.email },
-      });
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to Process your request at the moment',
-        { description: 'Error connecting to the database' },
-      );
-    }
-    //Handle Exception
-    if (existingUser) {
-      throw new BadRequestException('User with this email already exists');
-    }
-    //Create User
-    let newUser = this.userRepository.create(createUserDto);
-    try {
-      newUser = await this.userRepository.save(newUser);
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to Process your request at the moment',
-        { description: 'Error connecting to the database' },
-      );
-    }
-    return newUser;
+    return this.createUserProvider.createUser(createUserDto);
   }
 
   public findAll(
@@ -101,5 +80,9 @@ export class UsersService {
 
   public async createMany(createManyUsersDto: CreateManyUsersDto) {
     return this.usersCreateManyProvider.createMany(createManyUsersDto);
+  }
+
+  public async findOneByEmail(email: string) {
+    return await this.findOneUserByEmailProvider.findOneByEmail(email);
   }
 }
