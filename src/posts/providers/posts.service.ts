@@ -19,6 +19,9 @@ import { PatchPostDto } from '../dtos/patch-post.dto';
 import { GetPostsDto } from '../dtos/get-posts.dto';
 import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider';
 import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { CreatePostProvider } from './create-post.provider';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
+import { create } from 'domain';
 
 @Injectable()
 export class PostsService {
@@ -30,28 +33,11 @@ export class PostsService {
     private readonly metaOptionsRepository: Repository<MetaOption>,
     private readonly tagsSerivce: TagsService,
     private readonly paginationProvider: PaginationProvider,
+    private readonly createPostProvider: CreatePostProvider,
   ) {}
 
-  public async createPost(@Body() createPostDto: CreatePostDto) {
-    const author = await this.usersService.findOneById(createPostDto.authorId);
-
-    if (!author) {
-      throw new Error('Author not found');
-    }
-
-    // Ensure tags are resolved to Tag[] before assigning
-    const tags = createPostDto.tags
-      ? await this.tagsSerivce.findMultipleTags(createPostDto.tags)
-      : [];
-
-    const post = this.postRepository.create({
-      ...createPostDto,
-      author: { id: author.id } as any, // Explicitly cast to match DeepPartial<User>
-      metaOptions: createPostDto.metaOptions || undefined,
-      tags: tags as any, // Explicitly cast to match DeepPartial<Tag[]>
-    });
-
-    return await this.postRepository.save(post);
+  public async createPost(createPostDto: CreatePostDto, user: ActiveUserData) {
+    return await this.createPostProvider.createPost(createPostDto, user);
   }
 
   public async findAll(

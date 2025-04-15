@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   Body,
   Controller,
@@ -14,6 +16,8 @@ import { CreatePostDto } from './dtos/create-post.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { PatchPostDto } from './dtos/patch-post.dto';
 import { GetPostsDto } from './dtos/get-posts.dto';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Controller('posts')
 export class PostsController {
@@ -33,9 +37,13 @@ export class PostsController {
     type: [CreatePostDto],
   })
   @Post()
-  public createPost(@Body() creatPostDto: CreatePostDto) {
-    return this.postsService.createPost(creatPostDto);
+  public createPost(
+    @Body() creatPostDto: CreatePostDto,
+    @ActiveUser() user: ActiveUserData,
+  ) {
+    return this.postsService.createPost(creatPostDto, user);
   }
+
   @Patch()
   public updatePost(@Body() patchPostDto: PatchPostDto) {
     return this.postsService.update(patchPostDto);
