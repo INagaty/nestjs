@@ -10,6 +10,8 @@ import { SignInProvider } from './providers/sign-in.provider';
 import { UsersModule } from 'src/users/users.module';
 import jwtConfig from './config/jwt.config';
 import { AccessTokenGuard } from './guards/access-token/access-token.guard';
+import { GenerateTokensProvider } from './providers/generate-tokens.provider';
+import { RefreshTokensProvider } from './providers/refresh-tokens.provider';
 @Module({
   controllers: [AuthController],
   providers: [
@@ -20,6 +22,8 @@ import { AccessTokenGuard } from './guards/access-token/access-token.guard';
       useClass: BcryptProvider,
     },
     SignInProvider,
+    GenerateTokensProvider,
+    RefreshTokensProvider,
   ],
   imports: [
     forwardRef(() => UsersModule),
