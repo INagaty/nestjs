@@ -7,15 +7,20 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   public async sendUserWelcome(user: User): Promise<void> {
-    await this.mailerService.sendMail({
-      to: user.email,
-      subject: 'Welcome to Nestjs Blog!',
-      template: './welcome',
-      context: {
-        name: user.firstName,
-        email: user.email,
-        loginUrl: 'http://localhost:3000',
-      },
-    });
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: 'Welcome to Nestjs Blog!',
+        template: './welcome',
+        context: {
+          name: user.firstName,
+          email: user.email,
+          loginUrl: 'http://localhost:3000',
+        },
+      });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      throw new Error('Failed to send email');
+    }
   }
 }
